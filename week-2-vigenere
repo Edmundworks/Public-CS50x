@@ -1,0 +1,55 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+// Declare Function
+int fail(bool a);
+int win(bool b);
+int shift(char c);
+
+int main(int argc, string argv[])
+
+// Get keyword from user    
+
+{   
+    if (argc == 2)
+    {
+        for (int i = 0; i < strlen(argv[1]); i++)
+        if (isalpha(argv[1][i]))
+            {
+                
+            }    
+            else
+            {
+            fail(true);
+            return 1;
+            }
+        win(true);
+    }
+    else
+    {
+        fail(true);
+        return 1;
+    }
+}
+// Fail Function
+int fail(bool a)
+{
+    printf("Usage ./vigenere keyword\n");
+    return 1;
+}
+// Win Function
+int win(bool b)
+{
+   printf("success\n"); 
+   return 0;
+}
+// Shift Function
+int shift(char c)
+{
+   int post;
+   post = c - 65; 
+   return post;    
+}    
