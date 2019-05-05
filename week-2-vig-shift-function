@@ -1,0 +1,13 @@
+int shift(char c)
+{
+   int key;
+   if isupper(c)
+   {    
+       key = c - 65; 
+   }
+   else
+   {
+       key = c - 97;
+   }
+   return key; 
+}
