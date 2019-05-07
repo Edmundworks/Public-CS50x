@@ -1,0 +1,71 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+// Converts plaintext to ciphertext using a given key
+// Edmund Cuthbert
+// 28th April 2019
+// Problem Set 2
+
+int main(int argc, string argv[])    
+// Get key from user    
+{   
+    if (argc == 2)
+    {
+        for (int i = 0; i < strlen(argv[1]); i++)
+        {
+            if (isdigit(argv[1][i]))
+            {
+                
+            }    
+            else
+            {
+                printf("Usage ./caesar key\n");
+                return 1;
+            }    
+        }
+    }
+    else
+    {
+        printf("Usage ./caesar key\n");
+        return 1;
+    }
+// Make key a number    
+    int converted = atoi(argv[1]);
+// Get plaintext from user    
+    string plain = get_string("plaintext:  ");
+    printf("ciphertext: ");
+// Convert plaintext to ciphertext one char at a time
+    for (int j = 0; j < strlen(plain); j++)
+    {    
+// If plaintext char is a symbol         
+        if (plain[j] < 65 || (plain[j] > 90 && plain[j] < 97) || plain[j] > 122)
+        {
+            printf("%c", plain[j]);    
+        }
+// If plaintext char converts to a symbol when it shouldn't    
+        else if (plain[j] + (converted % 26) > 122 ||
+                 (plain[j] + (converted % 26) > 90 && plain[j] + (converted % 26) < 97))
+        {
+            plain[j] = ((plain[j] + (converted % 26)) - 26); 
+        }
+// If plaintext char is a capital that overshoots into a lowercase           
+        else if ((plain[j] > 64 && plain[j] < 91)
+                 && (plain[j] + (converted % 26) > 96)) 
+        {
+            plain[j] = plain[j] + (converted % 26) - 26;
+        }
+// All other cases           
+        else    
+        {    
+            plain[j] = plain[j] + (converted % 26);
+        }
+// Print each character of ciphertext    
+        printf("%c", plain[j]);
+    }    
+// Newline    
+    printf("\n");
+}
+
