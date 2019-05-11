@@ -1,0 +1,7 @@
+// Bad attempts to make a string out of the first two characters in the hash
+// for (int i = 0; i < 2; i++)
+        //{
+            //printf("%c", argv[1][i]);
+        //}    
+        //int salt_ish = atoi(argv[1]);
+        //printf("%d\n", salt_ish); 
