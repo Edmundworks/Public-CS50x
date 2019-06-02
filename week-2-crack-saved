@@ -1,0 +1,150 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <crypt.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Todo
+// Make it correctly identify when correct key has been achieved and stop
+//     the == isn't working because strings dont have values
+//     use strcmp to compare the two strings?
+// Is is working?
+// Is the if () slowing it down too much?
+//     Ran it for circa 15 minutes and only got the 4 chars
+//    Currently have it go from A to z which covers 6 non alpha chars. Problem?
+//    
+
+char salt[3];
+
+int main(int argc, string argv[])
+{
+    
+    if (argc == 2)
+    {   
+        salt[0] = argv[1][0];
+        salt[1] = argv[1][1];
+        salt[2] = '\0';
+        printf("Salt is %s\n", salt);
+        char key[6] = { 65, 0, 0, 0, 0 } ;
+        printf("Key is %s\n", key);
+        string given_hash = argv[1];
+        string guess_hash = crypt(key, salt);
+        if (strcmp(given_hash, guess_hash) == 0)
+        {
+            printf("You win!!!\n");
+            return 0;
+        }
+        else       
+        { 
+// For 1 character            
+            for (int i = 65; i < 123; i++)
+            {
+                
+                key[0] = i;
+                if (strcmp(given_hash, guess_hash) == 0)
+                {
+                    printf("You win! 1 character\n");
+                      
+                }    
+            }
+            printf("1 char done\n");
+// For 2 Characters            
+            for (int i = 65; i < 123; i++)
+            {
+                key[0] = i;
+                for (int j = 65; j < 123; j++)
+                {
+                    key[1] = j;
+                    if (strcmp(given_hash, guess_hash) == 0)
+                    {
+                        printf("You win! 2 characters\n");
+                          
+                    }
+                }
+            }
+            printf("2 char done\n");
+// For 3 characters            
+            for (int i = 65; i < 123; i++)
+            {
+                key[0] = i;
+                for (int j = 65; j < 123; j++)
+                {
+                    key[1] = j;
+                    for (int k = 65; k < 123; k++)
+                    {
+                        key[2] = k;
+                        if (strcmp(given_hash, guess_hash) == 0)
+                        {
+                            printf("You win! 3 characters\n");
+                              
+                        }
+                    }
+                }    
+            }
+            printf("3 char done\n");
+// For 4 characters
+            for (int i = 65; i < 123; i++)
+            {
+                key[0] = i;
+                for (int j = 65; j < 123; j++)
+                {
+                    key[1] = j;
+                    for (int k = 65; k < 123; k++)
+                    {
+                        key[2] = k;
+                        for (int l = 65; l < 123; l++)
+                        {
+                            key[3] = l;
+                            if (strcmp(given_hash, guess_hash) == 0)
+                            {
+                                printf("You win! 4 characters\n");
+                                
+                            }
+                        }
+                    }
+                }    
+            }
+            printf("4 char done\n");
+// For 5 characters
+            for (int i = 65; i < 123; i++)
+            {
+                key[0] = i;
+                for (int j = 65; j < 123; j++)
+                {
+                    key[1] = j;
+                    for (int k = 65; k < 123; k++)
+                    {
+                        key[2] = k;
+                        for (int l = 65; l < 123; l++)
+                        {
+                            key[3] = l;
+                            for (int m = 65; m < 123; m++)
+                            {
+                                key[4] = m;
+                                if (strcmp(given_hash, guess_hash) == 0)
+                                {
+                                    printf("You win! 5 characters\n");
+                                     
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            printf("5 char done\n");
+        }
+           printf("winning key is %s", key);    
+    }
+    else
+    {
+        printf("Usage: ./crack hashed password\n");
+        return 1;
+    }    
+} 
+
+// Storage - alternative way to go through each char (while method)
+// while (key[0] < 122)
+            //{
+                //key[0]++;
+                //printf("%s\n", key);
+            //}
