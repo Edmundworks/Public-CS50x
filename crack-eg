@@ -2,7 +2,4 @@ while (argv[1] != crypt(key, salt)
 {
  // Try different keys
 }
-else
-{
- printf("%s\n", key); 
-}
+
