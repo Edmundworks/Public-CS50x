@@ -1,0 +1,189 @@
+// Copies a BMP file
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#include "bmp.h"
+
+
+// Use debug50 if confused
+// ToDo
+// Tidy up
+// Use Style50
+// Watch remainder of Walkthrough
+
+
+
+int main(int argc, char *argv[])
+{
+    // ensure proper usage
+    if (argc != 4)
+    {
+        fprintf(stderr, "Usage: size-factor infile outfile\n");
+        return 1;
+    }
+
+    // Create size factor from input
+
+    int n = atoi(argv[1]);
+
+    // Check n is greater than 1 and less than 100
+
+    if (n < 1 || n > 100)
+    {
+        fprintf(stderr, "Usage: n needs to be positive number less than 100\n");
+        return 1;
+    }
+
+    // remember filenames
+    char *infile = argv[2];
+    char *outfile = argv[3];
+
+    // open input file
+    FILE *inptr = fopen(infile, "r");
+    if (inptr == NULL)
+    {
+        fprintf(stderr, "Could not open %s.\n", infile);
+        return 2;
+    }
+
+    // open output file
+    FILE *outptr = fopen(outfile, "w");
+    if (outptr == NULL)
+    {
+        fclose(inptr);
+        fprintf(stderr, "Could not create %s.\n", outfile);
+        return 3;
+    }
+
+    // read infile's BITMAPFILEHEADER
+    BITMAPFILEHEADER bf;
+    fread(&bf, sizeof(BITMAPFILEHEADER), 1, inptr);
+
+    // read infile's BITMAPINFOHEADER
+    BITMAPINFOHEADER bi;
+    fread(&bi, sizeof(BITMAPINFOHEADER), 1, inptr);
+
+    // ensure infile is (likely) a 24-bit uncompressed BMP 4.0
+    if (bf.bfType != 0x4d42 || bf.bfOffBits != 54 || bi.biSize != 40 ||
+        bi.biBitCount != 24 || bi.biCompression != 0)
+    {
+        fclose(outptr);
+        fclose(inptr);
+        fprintf(stderr, "Unsupported file format.\n");
+        return 4;
+    }
+
+    // Save width and height (height saved as positive number)
+    int width_save = bi.biWidth;
+
+    int height_save = abs(bi.biHeight);
+
+    int sizeimage_save = bi.biSizeImage;
+
+    int size_save = bf.bfSize;
+
+    // Padding save
+    int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+
+    int padding_save = padding;
+
+    printf("Old padding is %i\n", padding);
+
+    // Change width and height based on n
+    bi.biWidth = bi.biWidth * n;
+
+    bi.biHeight = bi.biHeight * n;
+
+    // Adjust new padding using new bi.biWidth
+    padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+
+    printf("New padding is %i\n", padding);
+
+    // Create new Size Image and size
+    bi.biSizeImage = ((sizeof(RGBTRIPLE) * bi.biWidth) + padding) * abs(bi.biHeight);
+
+    bf.bfSize = bi.biSizeImage + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+
+    // write outfile's BITMAPFILEHEADER
+    fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, outptr);
+
+    // write outfile's BITMAPINFOHEADER
+    fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
+
+    // iterate over infile's scanlines
+    // Change the limit in this condition from new height to height save
+    for (int i = 0; i < height_save; i++)
+    {
+        // iterate over pixels in scanline
+        // Use width_save as the limit rather than bi.biWidth
+        int loop_limit = n - 1;
+
+        for (int x = 0; x < loop_limit; x++)
+        {
+            for (int j = 0; j < width_save; j++)
+            {
+                // temporary storage
+                RGBTRIPLE triple;
+
+                // read RGB triple from infile
+                fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
+
+                // write RGB triple to outfile
+                for (int l = 0; l < n; l++)
+                {
+                    fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+                }
+            }
+
+            // Insert end of line padding
+            for (int k = 0; k < padding; k++)
+            {
+                fputc(0x00, outptr);
+            }
+
+            // Create offset, old width in pixels converted to bytes
+            int offset = -3 * width_save;
+
+            // Move cursor
+            fseek(inptr, offset, SEEK_CUR);
+        }
+
+        for (int j = 0; j < width_save; j++)
+        {
+            // temporary storage
+            RGBTRIPLE triple;
+
+            // read RGB triple from infile
+            fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
+
+            // write RGB triple to outfile
+            for (int l = 0; l < n; l++)
+            {
+                fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+            }
+        }
+
+        // Insert end of line padding
+        for (int k = 0; k < padding; k++)
+        {
+            fputc(0x00, outptr);
+        }
+
+        // final row write
+
+        // skip over padding, if any
+        // Replace padding in fseek with padding_save
+        fseek(inptr, padding_save, SEEK_CUR);
+    }
+
+    // close infile
+    fclose(inptr);
+
+    // close outfile
+    fclose(outptr);
+
+    // success
+    return 0;
+}
