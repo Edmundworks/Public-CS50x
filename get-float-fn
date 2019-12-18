@@ -1,0 +1,33 @@
+float get_float(const char *format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+
+    // Try to get a float from user
+    while (true)
+    {
+        // Get line of text, returning FLT_MAX on failure
+        string line = get_string(&ap, format);
+        if (line == NULL)
+        {
+            va_end(ap);
+            return FLT_MAX;
+        }
+        // Return a float if only a float was provided
+        if (strlen(line) > 0 && !isspace((unsigned char) line[0]))
+        {
+            char *tail;
+            errno = 0;
+            float f = strtof(line, &tail);
+            if (errno == 0 && *tail == '\0' && isfinite(f) != 0 && f < FLT_MAX)
+            {
+                // Disallow hexadecimal and exponents
+                if (strcspn(line, "XxEePp") == strlen(line))
+                {
+                    va_end(ap);
+                    return f;
+                }
+            }
+        }
+    }
+}
